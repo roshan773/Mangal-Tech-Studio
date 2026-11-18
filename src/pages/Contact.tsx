@@ -106,9 +106,9 @@ export const Contact: React.FC = () => {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
-  // Constants
-  const MAX_FILES = 10;
-  const MAX_SIZE_MB = 10;
+  // Constants - Supports bulk catalogue uploads (up to 50 files)
+  const MAX_FILES = 50;
+  const MAX_SIZE_MB = 20;
   const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
   const validateForm = () => {
@@ -565,7 +565,7 @@ export const Contact: React.FC = () => {
                   3. Upload Original Product Photographs
                 </h3>
                 <span className="text-[11px] text-charcoal/60">
-                  Max 10 files &bull; Up to 10 MB each
+                  Bulk uploads supported (up to 50 files &bull; 20 MB each)
                 </span>
               </div>
 
@@ -601,7 +601,7 @@ export const Contact: React.FC = () => {
                     <span className="text-xs text-charcoal/70"> or drag and drop your product photos here</span>
                   </div>
                   <p className="text-[11px] text-charcoal/50">
-                    Supported Formats: JPG, JPEG, PNG, WEBP (Max 10 files, 10MB per image)
+                    Supported: JPG, JPEG, PNG, WEBP (Supports 20+ to 50 product photos)
                   </p>
                 </div>
               </div>
