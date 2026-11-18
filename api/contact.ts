@@ -244,7 +244,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const resend = new Resend(process.env.RESEND_API_KEY);
         const targetEmail = process.env.NOTIFICATION_EMAIL || 'pakhreroshan@gmail.com';
 
-        await resend.emails.send({
+        const resendResult = await resend.emails.send({
           from: 'Mangal Tech Studio <onboarding@resend.dev>',
           to: targetEmail,
           replyTo: email,
@@ -257,9 +257,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           })),
         });
 
-        deliverySucceeded = true;
+        if (resendResult.error) {
+          console.error('Resend API returned error:', resendResult.error);
+        } else {
+          console.log('Resend delivered successfully with ID:', resendResult.data?.id);
+          deliverySucceeded = true;
+        }
       } catch (resendErr) {
-        console.error('Resend delivery failed, falling back:', resendErr);
+        console.error('Resend delivery exception, falling back:', resendErr);
       }
     }
 
