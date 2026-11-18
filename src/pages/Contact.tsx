@@ -106,10 +106,9 @@ export const Contact: React.FC = () => {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
 
-  // Constants - Supports bulk catalogue uploads (up to 50 files)
+  // Accept all image types: PNG, JPG, JPEG, WEBP, HEIC, TIFF, BMP, AVIF, GIF
   const MAX_FILES = 50;
-  const MAX_SIZE_MB = 20;
-  const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+  const MAX_SIZE_MB = 30;
 
   const validateForm = () => {
     const errors: Record<string, string> = {};
@@ -143,15 +142,17 @@ export const Contact: React.FC = () => {
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
 
-      // Validate format
-      if (!ALLOWED_TYPES.includes(file.type.toLowerCase())) {
-        setFileError(`"${file.name}" has an unsupported format. Please upload JPG, PNG or WEBP.`);
+      // Accept any image format (png, jpg, webp, heic, gif, tiff, svg, avif) or files with image extension
+      const isImage = file.type.startsWith('image/') || /\.(png|jpe?g|webp|heic|tiff?|bmp|gif|avif)$/i.test(file.name);
+
+      if (!isImage) {
+        setFileError(`"${file.name}" is not a recognized image file. Please upload images.`);
         return;
       }
 
-      // Validate size (10 MB)
+      // Validate size (30 MB per file)
       if (file.size > MAX_SIZE_MB * 1024 * 1024) {
-        setFileError(`"${file.name}" exceeds the maximum 10 MB file size limit.`);
+        setFileError(`"${file.name}" exceeds the maximum ${MAX_SIZE_MB} MB file size limit.`);
         return;
       }
 
@@ -582,7 +583,7 @@ export const Contact: React.FC = () => {
                   ref={fileInputRef}
                   type="file"
                   multiple
-                  accept=".jpg,.jpeg,.png,.webp"
+                  accept="image/*"
                   className="hidden"
                   onChange={e => handleFileProcess(e.target.files)}
                 />
@@ -598,7 +599,7 @@ export const Contact: React.FC = () => {
                     <span className="text-xs text-charcoal/70"> or drag and drop your product photos here</span>
                   </div>
                   <p className="text-[11px] text-charcoal/50">
-                    Supported: JPG, JPEG, PNG, WEBP (Supports 20+ to 50 product photos)
+                    Accepts all image formats: PNG, JPG, JPEG, WEBP, HEIC, TIFF (Up to 50 photos &bull; 30MB each)
                   </p>
                 </div>
               </div>
