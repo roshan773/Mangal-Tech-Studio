@@ -1,26 +1,22 @@
 import React from 'react';
-import { ArrowRight, ShieldCheck, Sparkles, HeartHandshake, Eye, Target, Palette } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Target, Palette } from 'lucide-react';
 import { Button } from '@/components/common/Button';
+import { PageBanner } from '@/components/common/PageBanner';
 
 export const About: React.FC = () => {
   return (
-    <div className="py-12 md:py-20 bg-ivory min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Brand Introduction Hero */}
-        <div className="max-w-3xl mb-16 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-evergreen/10 text-evergreen text-xs font-semibold tracking-wide">
-            <Sparkles className="w-3.5 h-3.5 text-copper" />
-            <span>Our Studio Story & Philosophy</span>
-          </div>
-          <h1 className="font-heading font-extrabold text-4xl sm:text-5xl text-evergreen tracking-tight">
-            About Mangal Tech Studio
-          </h1>
-          <p className="text-charcoal/80 text-base sm:text-lg leading-relaxed">
-            We are a modern managed creative photography studio. We empower independent brands, online artisans, and growing e-commerce businesses with magazine-grade visual storytelling without the barrier of traditional commercial production fees.
-          </p>
-        </div>
+    <div className="bg-ivory min-h-screen">
+      {/* Top Page Banner */}
+      <PageBanner
+        badge="Our Studio Story & Philosophy"
+        title="About Mangal Tech"
+        highlightedTitle="Studio"
+        description="We are a modern managed creative photography studio. We empower independent brands, online artisans, and growing e-commerce businesses with magazine-grade visual storytelling without traditional commercial production fees."
+        bgImageUrl="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=2000&q=80"
+      />
 
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+        
         {/* Editorial Story Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center mb-20">
           <div className="lg:col-span-6 space-y-5 text-sm sm:text-base text-charcoal/80 leading-relaxed font-normal">
@@ -133,7 +129,7 @@ export const About: React.FC = () => {
         </div>
 
         {/* Final CTA */}
-        <div className="p-8 md:p-12 rounded-refined bg-evergreen text-ivory text-center space-y-5 border border-white/10 max-w-4xl mx-auto">
+        <div className="p-8 md:p-12 rounded-refined bg-evergreen text-ivory text-center space-y-5 border border-white/10 max-w-4xl mx-auto shadow-xl">
           <h3 className="font-heading font-bold text-2xl sm:text-3xl text-white">
             Ready to Partner With Our Creative Team?
           </h3>

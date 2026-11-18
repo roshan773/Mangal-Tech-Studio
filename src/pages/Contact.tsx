@@ -13,6 +13,7 @@ import {
   ShieldCheck
 } from 'lucide-react';
 import { Button } from '@/components/common/Button';
+import { PageBanner } from '@/components/common/PageBanner';
 
 interface UploadedFileItem {
   file: File;
@@ -263,23 +264,18 @@ export const Contact: React.FC = () => {
   };
 
   return (
-    <div className="py-12 md:py-20 bg-ivory min-h-screen">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Header */}
-        <div className="text-center max-w-2xl mx-auto mb-12 space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-evergreen/10 text-evergreen text-xs font-semibold tracking-wide">
-            <Sparkles className="w-3.5 h-3.5 text-copper" />
-            <span>Direct Studio Intake</span>
-          </div>
-          <h1 className="font-heading font-extrabold text-3xl sm:text-4xl text-evergreen tracking-tight">
-            Start Your Project Enquiry
-          </h1>
-          <p className="text-charcoal/80 text-sm sm:text-base leading-relaxed">
-            Tell us about your brand and products. Upload your phone reference photos below, and our creative team will formulate your art direction and sample proof plan.
-          </p>
-        </div>
+    <div className="bg-ivory min-h-screen">
+      {/* Top Page Banner */}
+      <PageBanner
+        badge="Direct Studio Intake"
+        title="Start Your"
+        highlightedTitle="Project Enquiry"
+        description="Share your product details and upload your phone reference photos below. Our creative team will evaluate your items, establish tailored art direction, and prepare your sample proofs."
+        bgImageUrl="https://images.unsplash.com/photo-1608248597359-5f25712e52c8?auto=format&fit=crop&w=2000&q=80"
+      />
 
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+        
         {/* Success Alert Banner - SPECIFIED EXACT TEXT */}
         {submitSuccess && (
           <div className="mb-10 bg-evergreen text-white p-6 sm:p-8 rounded-refined border border-copper/30 shadow-xl space-y-3 animate-in fade-in zoom-in-95 duration-300">
