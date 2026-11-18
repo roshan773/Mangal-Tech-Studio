@@ -206,38 +206,35 @@ export const Contact: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // Step 1: Upload images directly to high-speed cloud storage
-      // This bypasses Vercel's strict 4.5MB request limit entirely!
+      // Step 1: Upload each image through /api/upload
+      // Uploading one-by-one keeps each request small (~2MB) and bypasses CORS & Vercel's 4.5MB ceiling!
       const directImageLinks: { name: string; url: string }[] = [];
 
       if (uploadedFiles.length > 0) {
-        setUploadProgress(`Uploading images (0/${uploadedFiles.length})...`);
-        
         for (let i = 0; i < uploadedFiles.length; i++) {
           const item = uploadedFiles[i];
           setUploadProgress(`Uploading ${item.file.name} (${i + 1}/${uploadedFiles.length})...`);
 
           const uploadData = new FormData();
-          uploadData.append('reqtype', 'fileupload');
-          uploadData.append('fileToUpload', item.file, item.file.name);
+          uploadData.append('file', item.file, item.file.name);
 
           try {
-            const res = await fetch('https://catbox.moe/user/api.php', {
+            const res = await fetch('/api/upload', {
               method: 'POST',
               body: uploadData,
             });
 
             if (res.ok) {
-              const url = await res.text();
-              if (url && url.startsWith('http')) {
+              const data = await res.json();
+              if (data?.url) {
                 directImageLinks.push({
                   name: item.file.name,
-                  url: url.trim(),
+                  url: data.url,
                 });
               }
             }
           } catch (uploadErr) {
-            console.warn('Direct upload warning:', uploadErr);
+            console.warn('Upload error for file:', item.file.name, uploadErr);
           }
         }
       }
