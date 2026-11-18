@@ -27,7 +27,7 @@ export const Home: React.FC = () => {
     {
       title: 'Lumière Botanical Radiance Serum',
       category: 'Cosmetics & Skincare',
-      before: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=800&q=80',
+      before: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=800&q=80',
       after: 'https://images.unsplash.com/photo-1608248597359-5f25712e52c8?auto=format&fit=crop&w=1200&q=85',
       aspectRatio: 'aspect-[4/3]',
       transformation: 'Smartphone bottle snap → Sunlit travertine pedestal with natural water reflections'
@@ -35,7 +35,7 @@ export const Home: React.FC = () => {
     {
       title: 'Aurelia 18K Emerald Heritage Pendant',
       category: 'Fine Jewellery',
-      before: 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&w=800&q=80',
+      before: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&w=800&q=80',
       after: 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=1200&q=85',
       aspectRatio: 'aspect-[4/3]',
       transformation: 'Flat tabletop snap → Macro directional rim lighting with prismatic gem facets'
@@ -43,10 +43,10 @@ export const Home: React.FC = () => {
     {
       title: 'Monsoon Malabar Single-Origin Coffee',
       category: 'Food & Beverage',
-      before: 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&w=800&q=80',
+      before: 'https://images.unsplash.com/photo-1587734195503-904fca47e0e9?auto=format&fit=crop&w=800&q=80',
       after: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1200&q=85',
       aspectRatio: 'aspect-[4/3]',
-      transformation: 'Cardboard box cutout → Sensory artisanal roastery setting with warm morning light'
+      transformation: 'Raw product package cutout → Sensory artisanal roastery setting with warm morning light'
     }
   ];
 
