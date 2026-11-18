@@ -193,6 +193,8 @@ export const Contact: React.FC = () => {
     setIsDragging(false);
   };
 
+  const [uploadProgress, setUploadProgress] = useState<string | null>(null);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitError(null);
@@ -204,27 +206,63 @@ export const Contact: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      // Build FormData payload for /api/contact
-      const payload = new FormData();
-      payload.append('fullName', formData.fullName);
-      payload.append('brandName', formData.brandName);
-      payload.append('email', formData.email);
-      payload.append('whatsapp', formData.whatsapp);
-      payload.append('productCategory', formData.productCategory);
-      payload.append('productCount', formData.productCount);
-      payload.append('preferredStyle', formData.preferredStyle);
-      payload.append('projectBudget', formData.projectBudget);
-      payload.append('imagesRequired', formData.imagesRequired);
-      payload.append('creativeInstructions', formData.creativeInstructions);
+      // Step 1: Upload images directly to high-speed cloud storage
+      // This bypasses Vercel's strict 4.5MB request limit entirely!
+      const directImageLinks: { name: string; url: string }[] = [];
 
-      // Append files
-      uploadedFiles.forEach((item, index) => {
-        payload.append(`attachment_${index}`, item.file);
-      });
+      if (uploadedFiles.length > 0) {
+        setUploadProgress(`Uploading images (0/${uploadedFiles.length})...`);
+        
+        for (let i = 0; i < uploadedFiles.length; i++) {
+          const item = uploadedFiles[i];
+          setUploadProgress(`Uploading ${item.file.name} (${i + 1}/${uploadedFiles.length})...`);
 
+          const uploadData = new FormData();
+          uploadData.append('reqtype', 'fileupload');
+          uploadData.append('fileToUpload', item.file, item.file.name);
+
+          try {
+            const res = await fetch('https://catbox.moe/user/api.php', {
+              method: 'POST',
+              body: uploadData,
+            });
+
+            if (res.ok) {
+              const url = await res.text();
+              if (url && url.startsWith('http')) {
+                directImageLinks.push({
+                  name: item.file.name,
+                  url: url.trim(),
+                });
+              }
+            }
+          } catch (uploadErr) {
+            console.warn('Direct upload warning:', uploadErr);
+          }
+        }
+      }
+
+      setUploadProgress('Sending Enquiry Details...');
+
+      // Step 2: Send clean JSON payload with image URLs to /api/contact
       const response = await fetch('/api/contact', {
         method: 'POST',
-        body: payload,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fullName: formData.fullName,
+          brandName: formData.brandName,
+          email: formData.email,
+          whatsapp: formData.whatsapp,
+          productCategory: formData.productCategory,
+          productCount: formData.productCount,
+          preferredStyle: formData.preferredStyle,
+          projectBudget: formData.projectBudget,
+          imagesRequired: formData.imagesRequired,
+          creativeInstructions: formData.creativeInstructions,
+          imageLinks: directImageLinks,
+        }),
       });
 
       const result = await response.json().catch(() => ({}));
@@ -648,7 +686,7 @@ export const Contact: React.FC = () => {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-5 h-5 animate-spin" />
-                    <span>Sending Enquiry Details...</span>
+                    <span>{uploadProgress || 'Sending Enquiry Details...'}</span>
                   </>
                 ) : (
                   <>

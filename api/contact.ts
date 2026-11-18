@@ -4,43 +4,20 @@ import fs from 'fs';
 import nodemailer from 'nodemailer';
 import { Resend } from 'resend';
 
-// Vercel serverless configuration
-export const config = {
-  api: {
-    bodyParser: false,
-    maxDuration: 60,
-  },
-};
-
-// Upload helper for cloud links
-async function uploadToCloud(file: formidable.File): Promise<string | null> {
-  try {
-    if (!file.filepath || !fs.existsSync(file.filepath)) return null;
-    const fileBuffer = fs.readFileSync(file.filepath);
-    const blob = new Blob([fileBuffer], { type: file.mimetype || 'image/jpeg' });
-    
-    const uploadData = new FormData();
-    uploadData.append('reqtype', 'fileupload');
-    uploadData.append('fileToUpload', blob, file.originalFilename || 'product_photo.jpg');
-
-    const res = await fetch('https://catbox.moe/user/api.php', {
-      method: 'POST',
-      body: uploadData,
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) MangalTechStudio/1.0',
-      },
+// Helper: read raw body if request is sent as stream/json
+async function getRawBody(req: VercelRequest): Promise<string> {
+  return new Promise((resolve, reject) => {
+    let data = '';
+    req.on('data', (chunk) => {
+      data += chunk;
     });
-
-    if (res.ok) {
-      const url = await res.text();
-      if (url && url.startsWith('http')) {
-        return url.trim();
-      }
-    }
-  } catch (err) {
-    console.error('Cloud storage upload error:', err);
-  }
-  return null;
+    req.on('end', () => {
+      resolve(data);
+    });
+    req.on('error', (err) => {
+      reject(err);
+    });
+  });
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -52,38 +29,81 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   }
 
-  const form = formidable({
-    multiples: true,
-    maxFileSize: 10 * 1024 * 1024,
-    maxFiles: 10,
-    keepExtensions: true,
-  });
-
   try {
-    const { fields, files } = await new Promise<{ fields: formidable.Fields; files: formidable.Files }>(
-      (resolve, reject) => {
-        form.parse(req, (err, fields, files) => {
-          if (err) reject(err);
-          else resolve({ fields, files });
-        });
+    const contentType = req.headers['content-type'] || '';
+    let fields: Record<string, any> = {};
+    let imageLinks: { name: string; url: string }[] = [];
+    let fileAttachments: { filename: string; content: Buffer; contentType: string }[] = [];
+
+    if (contentType.includes('application/json')) {
+      // 1. JSON Payload: Lightweight & never blocked by Vercel 4.5MB ceiling
+      let rawJson = req.body;
+      if (typeof rawJson === 'string') {
+        try {
+          rawJson = JSON.parse(rawJson);
+        } catch (e) {}
+      } else if (!rawJson || Object.keys(rawJson).length === 0) {
+        const text = await getRawBody(req);
+        try {
+          rawJson = JSON.parse(text);
+        } catch (e) {}
       }
-    );
 
-    const getVal = (val: string | string[] | undefined): string => {
-      if (Array.isArray(val)) return val[0] || '';
-      return val || '';
-    };
+      fields = rawJson || {};
+      if (Array.isArray(fields.imageLinks)) {
+        imageLinks = fields.imageLinks;
+      }
+    } else {
+      // 2. Fallback Multipart Form Parsing
+      const form = formidable({
+        multiples: true,
+        maxFileSize: 10 * 1024 * 1024,
+        maxFiles: 10,
+        keepExtensions: true,
+      });
 
-    const fullName = getVal(fields.fullName);
-    const brandName = getVal(fields.brandName);
-    const email = getVal(fields.email);
-    const whatsapp = getVal(fields.whatsapp);
-    const productCategory = getVal(fields.productCategory);
-    const productCount = getVal(fields.productCount);
-    const preferredStyle = getVal(fields.preferredStyle);
-    const projectBudget = getVal(fields.projectBudget);
-    const imagesRequired = getVal(fields.imagesRequired);
-    const creativeInstructions = getVal(fields.creativeInstructions);
+      const parsed = await new Promise<{ fields: formidable.Fields; files: formidable.Files }>(
+        (resolve, reject) => {
+          form.parse(req, (err, fields, files) => {
+            if (err) reject(err);
+            else resolve({ fields, files });
+          });
+        }
+      );
+
+      const getVal = (v: any) => (Array.isArray(v) ? v[0] : v || '');
+      Object.keys(parsed.fields).forEach((k) => {
+        fields[k] = getVal(parsed.fields[k]);
+      });
+
+      // Handle raw files
+      const rawFiles: formidable.File[] = [];
+      Object.values(parsed.files).forEach((entry) => {
+        if (Array.isArray(entry)) rawFiles.push(...entry);
+        else if (entry) rawFiles.push(entry);
+      });
+
+      for (const f of rawFiles) {
+        if (f.filepath && fs.existsSync(f.filepath)) {
+          fileAttachments.push({
+            filename: f.originalFilename || 'photo.jpg',
+            content: fs.readFileSync(f.filepath),
+            contentType: f.mimetype || 'image/jpeg',
+          });
+        }
+      }
+    }
+
+    const fullName = fields.fullName || '';
+    const brandName = fields.brandName || '';
+    const email = fields.email || '';
+    const whatsapp = fields.whatsapp || '';
+    const productCategory = fields.productCategory || 'General Product';
+    const productCount = fields.productCount || '1 Product';
+    const preferredStyle = fields.preferredStyle || 'Studio';
+    const projectBudget = fields.projectBudget || '₹2,499';
+    const imagesRequired = fields.imagesRequired || '10 Images';
+    const creativeInstructions = fields.creativeInstructions || '';
 
     if (!fullName || !email || !brandName || !whatsapp) {
       return res.status(400).json({
@@ -92,39 +112,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       });
     }
 
-    // Collect all uploaded file objects
-    const fileList: formidable.File[] = [];
-    Object.values(files).forEach((fileEntry) => {
-      if (Array.isArray(fileEntry)) {
-        fileList.push(...fileEntry);
-      } else if (fileEntry) {
-        fileList.push(fileEntry);
-      }
-    });
-
-    // 1. Prepare raw email attachments (for direct file attachment in inbox)
-    const emailAttachments = fileList.map((file) => ({
-      filename: file.originalFilename || 'product_photo.jpg',
-      content: fs.readFileSync(file.filepath),
-      contentType: file.mimetype || 'image/jpeg',
-    }));
-
-    // 2. Also upload to cloud storage for one-click clickable links in email body
-    const uploadedLinks: { name: string; url: string }[] = [];
-    for (const file of fileList) {
-      const link = await uploadToCloud(file);
-      if (link) {
-        uploadedLinks.push({
-          name: file.originalFilename || 'Photo',
-          url: link,
-        });
-      }
-    }
-
-    // Prepare email contents
     const emailSubject = `📸 New Project Enquiry: ${brandName} (${fullName})`;
-    
-    // HTML Email Body
+
+    // HTML Email
     const htmlBody = `
       <div style="font-family: Arial, sans-serif; max-width: 650px; margin: 0 auto; color: #252820; line-height: 1.6; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
         <div style="background-color: #123B32; padding: 24px; color: #ffffff;">
@@ -156,15 +146,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           </p>
 
           <h3 style="color: #123B32; border-bottom: 2px solid #F4F0E6; padding-bottom: 8px;">
-            Uploaded Photos (${fileList.length} Files Attached)
+            Uploaded Photos (${imageLinks.length > 0 ? imageLinks.length : fileAttachments.length} Files)
           </h3>
           ${
-            uploadedLinks.length > 0
+            imageLinks.length > 0
               ? `
                 <div style="margin-top: 12px;">
                   <p style="font-size: 13px; color: #64748b; margin-bottom: 12px;">Direct links to view full-resolution references in browser:</p>
                   <ul style="padding-left: 20px; margin: 0; font-size: 14px;">
-                    ${uploadedLinks
+                    ${imageLinks
                       .map(
                         (l, idx) => `
                       <li style="margin-bottom: 8px;">
@@ -176,13 +166,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
                   </ul>
                 </div>
               `
-              : `<p style="font-size: 14px; color: #64748b;">No photos uploaded.</p>`
+              : `<p style="font-size: 14px; color: #64748b;">${fileAttachments.length > 0 ? 'Files attached to this email.' : 'No photos uploaded.'}</p>`
           }
         </div>
       </div>
     `;
 
-    // Plain text fallback
     const plainTextBody = [
       `NEW PROJECT INTAKE - MANGAL TECH STUDIO`,
       `-----------------------------------------`,
@@ -199,15 +188,45 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       `Creative Notes:`,
       `${creativeInstructions || 'None provided'}`,
       ``,
-      `Uploaded Images (${uploadedLinks.length} Files):`,
-      ...uploadedLinks.map((l, i) => `[${i + 1}] ${l.name}: ${l.url}`),
+      `Uploaded Images (${imageLinks.length} Files):`,
+      ...imageLinks.map((l, i) => `[${i + 1}] ${l.name}: ${l.url}`),
     ].join('\n');
 
     let deliverySucceeded = false;
 
-    // METHOD A: DIRECT SMTP / GMAIL / ZOHO (Attaches actual image files directly to the email!)
-    // If SMTP_USER & SMTP_PASS (e.g. Gmail App Password) are provided in Vercel
-    if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+    // 1. TRY RESEND (Direct file attachment or email with links)
+    if (process.env.RESEND_API_KEY) {
+      try {
+        const resend = new Resend(process.env.RESEND_API_KEY);
+        const targetEmail = process.env.NOTIFICATION_EMAIL || 'pakhreroshan@gmail.com';
+
+        const resendPayload: any = {
+          from: 'Mangal Tech Studio <onboarding@resend.dev>',
+          to: targetEmail,
+          replyTo: email,
+          subject: emailSubject,
+          text: plainTextBody,
+          html: htmlBody,
+        };
+
+        if (fileAttachments.length > 0) {
+          resendPayload.attachments = fileAttachments;
+        }
+
+        const resendResult = await resend.emails.send(resendPayload);
+
+        if (!resendResult.error) {
+          deliverySucceeded = true;
+        } else {
+          console.warn('Resend failed, falling back:', resendResult.error);
+        }
+      } catch (e) {
+        console.warn('Resend exception, falling back:', e);
+      }
+    }
+
+    // 2. TRY SMTP (Gmail / Zoho)
+    if (!deliverySucceeded && process.env.SMTP_USER && process.env.SMTP_PASS) {
       try {
         const transporter = nodemailer.createTransport({
           host: process.env.SMTP_HOST || 'smtp.gmail.com',
@@ -228,95 +247,49 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           subject: emailSubject,
           text: plainTextBody,
           html: htmlBody,
-          attachments: emailAttachments, // Physical file attachments in inbox!
+          attachments: fileAttachments,
         });
 
         deliverySucceeded = true;
-      } catch (smtpErr) {
-        console.error('SMTP delivery failed, falling back:', smtpErr);
+      } catch (e) {
+        console.warn('SMTP fallback error:', e);
       }
     }
 
-    // METHOD B: RESEND API (Supports up to 40MB of direct file attachments!)
-    // If RESEND_API_KEY is configured in Vercel
-    if (!deliverySucceeded && process.env.RESEND_API_KEY) {
-      try {
-        const resend = new Resend(process.env.RESEND_API_KEY);
-        const targetEmail = process.env.NOTIFICATION_EMAIL || 'pakhreroshan@gmail.com';
-
-        const resendResult = await resend.emails.send({
-          from: 'Mangal Tech Studio <onboarding@resend.dev>',
-          to: targetEmail,
-          replyTo: email,
-          subject: emailSubject,
-          text: plainTextBody,
-          html: htmlBody,
-          attachments: emailAttachments.map((a) => ({
-            filename: a.filename,
-            content: a.content,
-          })),
-        });
-
-        if (resendResult.error) {
-          console.error('Resend API returned error:', resendResult.error);
-        } else {
-          console.log('Resend delivered successfully with ID:', resendResult.data?.id);
-          deliverySucceeded = true;
-        }
-      } catch (resendErr) {
-        console.error('Resend delivery exception, falling back:', resendErr);
-      }
-    }
-
-    // METHOD C: WEB3FORMS (Always active fallback with links embedded in message)
+    // 3. TRY WEB3FORMS (Always reliable, embeds direct image links)
     if (!deliverySucceeded) {
       const accessKey = process.env.WEB3FORMS_ACCESS_KEY;
-      if (!accessKey) {
-        throw new Error('WEB3FORMS_ACCESS_KEY is not defined.');
-      }
+      if (accessKey) {
+        const web3FormData = new FormData();
+        web3FormData.append('access_key', accessKey);
+        web3FormData.append('subject', emailSubject);
+        web3FormData.append('from_name', 'Mangal Tech Studio');
+        web3FormData.append('name', fullName);
+        web3FormData.append('email', email);
+        web3FormData.append('message', plainTextBody);
+        web3FormData.append('Brand Name', brandName);
+        web3FormData.append('WhatsApp', whatsapp);
+        web3FormData.append('Category', productCategory);
 
-      const web3FormData = new FormData();
-      web3FormData.append('access_key', accessKey);
-      web3FormData.append('subject', emailSubject);
-      web3FormData.append('from_name', 'Mangal Tech Studio');
-      web3FormData.append('name', fullName);
-      web3FormData.append('email', email);
-      web3FormData.append('message', plainTextBody);
-      web3FormData.append('Brand Name', brandName);
-      web3FormData.append('WhatsApp', whatsapp);
-      web3FormData.append('Category', productCategory);
+        imageLinks.forEach((img, i) => {
+          web3FormData.append(`📷 Photo ${i + 1}`, `${img.name}: ${img.url}`);
+        });
 
-      // Add each image link as a prominent custom field in the email
-      uploadedLinks.forEach((img, i) => {
-        web3FormData.append(`📷 Product Photo ${i + 1}`, `${img.name}: ${img.url}`);
-      });
+        const response = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          body: web3FormData,
+          headers: {
+            Accept: 'application/json',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          },
+        });
 
-      const response = await fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        body: web3FormData,
-        headers: {
-          Accept: 'application/json',
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-        },
-      });
-
-      const result = await response.json().catch(() => ({}));
-
-      if (response.ok && result.success) {
-        deliverySucceeded = true;
-      } else {
-        throw new Error(result.message || 'Web3Forms failed to process submission.');
+        const result = await response.json().catch(() => ({}));
+        if (response.ok && result.success) {
+          deliverySucceeded = true;
+        }
       }
     }
-
-    // Cleanup local temp files
-    fileList.forEach((item) => {
-      try {
-        if (item.filepath && fs.existsSync(item.filepath)) {
-          fs.unlinkSync(item.filepath);
-        }
-      } catch (e) {}
-    });
 
     if (deliverySucceeded) {
       return res.status(200).json({
@@ -326,7 +299,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     } else {
       return res.status(500).json({
         success: false,
-        message: 'Failed to deliver email. Please check server logs.',
+        message: 'Failed to deliver notification. Please try again or email us directly.',
       });
     }
   } catch (error: any) {
