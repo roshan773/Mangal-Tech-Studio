@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  body {
+    background-color: #F4F0E6;
+    color: #252820;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background-color: #C47A4A;
+    color: #FFFFFF;
+  }
+}
+
+/* Custom editorial styling */
+.editorial-border {
+  border-color: rgba(18, 59, 50, 0.12);
+}
+
+.editorial-shadow {
+  box-shadow: 0 12px 36px -8px rgba(18, 59, 50, 0.08);
+}
