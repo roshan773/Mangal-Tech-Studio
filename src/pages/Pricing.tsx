@@ -1,27 +1,23 @@
 import React from 'react';
-import { Check, HelpCircle, ShieldCheck, ArrowRight, Zap, Sparkles } from 'lucide-react';
+import { Check, HelpCircle, ArrowRight } from 'lucide-react';
 import { PRICING_PACKAGES } from '@/data/pricing';
 import { Button } from '@/components/common/Button';
+import { PageBanner } from '@/components/common/PageBanner';
 
 export const Pricing: React.FC = () => {
   return (
-    <div className="py-12 md:py-20 bg-ivory min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Header */}
-        <div className="max-w-3xl mb-16 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-evergreen/10 text-evergreen text-xs font-semibold tracking-wide">
-            <Sparkles className="w-3.5 h-3.5 text-copper" />
-            <span>Clear, Honest Investment</span>
-          </div>
-          <h1 className="font-heading font-extrabold text-4xl sm:text-5xl text-evergreen tracking-tight">
-            Simple, Transparent Studio Pricing
-          </h1>
-          <p className="text-charcoal/80 text-base sm:text-lg leading-relaxed">
-            Professional studio quality at accessible rates. No hidden setup fees, equipment surcharges, or complex licensing terms. Choose the package that matches your catalog needs.
-          </p>
-        </div>
+    <div className="bg-ivory min-h-screen">
+      {/* Top Page Banner */}
+      <PageBanner
+        badge="Clear & Honest Investment"
+        title="Simple, Transparent"
+        highlightedTitle="Pricing"
+        description="Commercial studio quality at predictable, accessible rates. No hidden day rates, photographer equipment fees, or licensing surprises. Select the tier that matches your product lineup."
+        bgImageUrl="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=2000&q=80"
+      />
 
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+        
         {/* Pricing Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
           {PRICING_PACKAGES.map((pkg) => (
@@ -126,30 +122,6 @@ export const Pricing: React.FC = () => {
               <p className="text-xs leading-relaxed text-charcoal/70">
                 All delivered final images include full commercial usage rights for your website, Amazon, Shopify, social media advertising, and marketing collateral.
               </p>
-            </div>
-          </div>
-        </div>
-
-        {/* FAQ list */}
-        <div className="mt-12 space-y-4 max-w-3xl mx-auto">
-          <h3 className="font-heading font-bold text-xl text-evergreen text-center mb-6">
-            Frequently Asked Questions
-          </h3>
-
-          <div className="space-y-3 text-xs sm:text-sm">
-            <div className="bg-white p-4 rounded border border-evergreen/10 space-y-1">
-              <h4 className="font-semibold text-evergreen">Do I need to send physical samples of my products?</h4>
-              <p className="text-charcoal/70">No! Mangal Tech Studio operates 100% remotely. You take 3-5 clear smartphone photos of your physical product from multiple angles and submit them via our secure contact form.</p>
-            </div>
-
-            <div className="bg-white p-4 rounded border border-evergreen/10 space-y-1">
-              <h4 className="font-semibold text-evergreen">How do revisions work?</h4>
-              <p className="text-charcoal/70">Each package includes specified revision rounds. You can request changes to background styling, color temperature, prop placements, or lighting intensity.</p>
-            </div>
-
-            <div className="bg-white p-4 rounded border border-evergreen/10 space-y-1">
-              <h4 className="font-semibold text-evergreen">How do I make payment?</h4>
-              <p className="text-charcoal/70">Once we review your project scope and confirm all requirements, we send you an official invoice with direct UPI, Bank Transfer, or card payment options before starting work.</p>
             </div>
           </div>
         </div>

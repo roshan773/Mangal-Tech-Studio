@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import { Sparkles, Sliders, X, Eye, ArrowRight } from 'lucide-react';
+import { Sliders, Eye, ArrowRight } from 'lucide-react';
 import { PORTFOLIO_ITEMS, PortfolioItem } from '@/data/portfolio';
 import { BeforeAfterSlider } from '@/components/common/BeforeAfterSlider';
 import { Button } from '@/components/common/Button';
+import { PageBanner } from '@/components/common/PageBanner';
 
 type CategoryFilter = 'All' | 'Skincare' | 'Beauty' | 'Jewellery' | 'Fashion' | 'Home Décor' | 'Lifestyle' | 'Food';
 
 export const Portfolio: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState<CategoryFilter>('All');
   const [selectedItem, setSelectedItem] = useState<PortfolioItem | null>(null);
-  const [lightboxMode, setLightboxMode] = useState<'after' | 'slider'>('after');
+  const [lightboxMode, setLightboxMode] = useState<'after' | 'slider'>('slider');
 
   const categories: CategoryFilter[] = [
     'All',
@@ -26,30 +27,32 @@ export const Portfolio: React.FC = () => {
     ? PORTFOLIO_ITEMS
     : PORTFOLIO_ITEMS.filter((item) => item.category === activeCategory);
 
-  const openLightbox = (item: PortfolioItem, mode: 'after' | 'slider' = 'after') => {
+  const openLightbox = (item: PortfolioItem, mode: 'after' | 'slider' = 'slider') => {
     setSelectedItem(item);
     setLightboxMode(mode);
   };
 
   return (
-    <div className="py-12 md:py-20 bg-ivory min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="bg-ivory min-h-screen">
+      {/* Top Page Banner */}
+      <PageBanner
+        badge="Curated Creative Gallery"
+        title="Our Studio"
+        highlightedTitle="Portfolio"
+        description="Inspect our actual product transformations. See how raw mobile phone photos are converted into magazine-grade studio podiums, tactile macro close-ups, and aspirational lifestyle scenes."
+        bgImageUrl="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&w=2000&q=80"
+      />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
         
-        {/* Header */}
-        <div className="max-w-3xl mb-12 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-evergreen/10 text-evergreen text-xs font-semibold tracking-wide">
-            <Sparkles className="w-3.5 h-3.5 text-copper" />
-            <span>Curated Creative Gallery</span>
+        {/* Quality & Consent Note */}
+        <div className="mb-8 text-xs text-charcoal/70 bg-white/80 p-4 rounded-refined border border-evergreen/15 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-subtle">
+          <div>
+            <strong className="text-evergreen">Exemplary Studio Showcases:</strong> Each card demonstrates a comparison between raw reference photos and final commercial art-directed outputs.
           </div>
-          <h1 className="font-heading font-extrabold text-4xl sm:text-5xl text-evergreen tracking-tight">
-            Our Studio Portfolio
-          </h1>
-          <p className="text-charcoal/80 text-base sm:text-lg leading-relaxed">
-            Explore our curated showcase of product transformations. Each piece is crafted using our managed AI-assisted production pipeline and perfected with rigorous manual art direction.
-          </p>
-          <div className="text-xs text-charcoal/60 bg-white/60 p-3 rounded border border-evergreen/10 inline-block">
-            <strong>Note:</strong> Work displayed represents curated demonstration concepts and approved client deliverables. Client assets are never publicly showcased without prior written consent.
-          </div>
+          <span className="text-[11px] text-copper font-medium whitespace-nowrap">
+            Client images never displayed without consent
+          </span>
         </div>
 
         {/* Category Filters */}
@@ -76,46 +79,26 @@ export const Portfolio: React.FC = () => {
               key={item.id}
               className="bg-white rounded-refined overflow-hidden border border-evergreen/10 shadow-subtle hover:shadow-hover transition-all duration-300 flex flex-col group"
             >
-              {/* Image Preview Container */}
-              <div className="relative aspect-[4/3] overflow-hidden bg-ivory-dark">
-                <img
-                  src={item.afterImage}
-                  alt={item.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  loading="lazy"
+              {/* Interactive In-Card Before/After Slider */}
+              <div className="relative">
+                <BeforeAfterSlider
+                  beforeImage={item.beforeImage}
+                  afterImage={item.afterImage}
+                  beforeLabel="Raw Photo"
+                  afterLabel="Studio Output"
+                  aspectRatio="aspect-[4/3]"
                 />
-
-                {/* Category Badge */}
-                <div className="absolute top-3 left-3 bg-evergreen/90 backdrop-blur-sm text-ivory text-[10px] uppercase tracking-wider font-semibold px-2.5 py-1 rounded shadow-sm">
-                  {item.category}
-                </div>
-
-                {/* Overlay with Actions */}
-                <div className="absolute inset-0 bg-charcoal/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3 p-4">
-                  <button
-                    onClick={() => openLightbox(item, 'slider')}
-                    className="bg-white text-evergreen hover:bg-copper hover:text-white px-3.5 py-2 rounded-refined text-xs font-semibold shadow-lg flex items-center gap-1.5 transition-colors"
-                  >
-                    <Sliders className="w-3.5 h-3.5" />
-                    <span>Compare Before/After</span>
-                  </button>
-                  <button
-                    onClick={() => openLightbox(item, 'after')}
-                    className="bg-evergreen text-ivory hover:bg-evergreen-light px-3.5 py-2 rounded-refined text-xs font-semibold shadow-lg flex items-center gap-1.5 transition-colors"
-                  >
-                    <Eye className="w-3.5 h-3.5" />
-                    <span>Inspect</span>
-                  </button>
-                </div>
               </div>
 
               {/* Card Meta Content */}
               <div className="p-5 flex flex-col flex-grow justify-between space-y-3">
                 <div>
-                  <div className="text-[11px] text-copper font-semibold uppercase tracking-wider">
-                    {item.clientType}
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] text-copper font-semibold uppercase tracking-wider">
+                      {item.category} &bull; {item.clientType}
+                    </span>
                   </div>
-                  <h3 className="font-heading font-bold text-lg text-evergreen mt-0.5">
+                  <h3 className="font-heading font-bold text-lg text-evergreen mt-1">
                     {item.title}
                   </h3>
                   <p className="text-xs text-charcoal/70 mt-2 line-clamp-2 leading-relaxed">
@@ -129,9 +112,9 @@ export const Portfolio: React.FC = () => {
                   </span>
                   <button
                     onClick={() => openLightbox(item, 'slider')}
-                    className="text-copper hover:text-copper-dark font-medium flex items-center gap-1 shrink-0"
+                    className="text-copper hover:text-copper-dark font-semibold flex items-center gap-1 shrink-0"
                   >
-                    Compare <Sliders className="w-3 h-3" />
+                    Inspect Fullscreen <Sliders className="w-3 h-3" />
                   </button>
                 </div>
               </div>
@@ -139,27 +122,14 @@ export const Portfolio: React.FC = () => {
           ))}
         </div>
 
-        {/* Empty state if any filter has no items */}
-        {filteredItems.length === 0 && (
-          <div className="text-center py-20 bg-white rounded-refined border border-evergreen/10 p-8">
-            <h3 className="text-lg font-heading font-bold text-evergreen">No projects found in this category</h3>
-            <p className="text-xs text-charcoal/70 mt-1">Please select another category or view all projects.</p>
-            <div className="mt-4">
-              <Button onClick={() => setActiveCategory('All')} variant="secondary" size="sm">
-                View All Projects
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* Bottom CTA */}
-        <div className="mt-20 p-8 md:p-12 rounded-refined bg-evergreen text-ivory border border-white/10 flex flex-col md:flex-row items-center justify-between gap-6">
+        {/* Bottom CTA Card */}
+        <div className="mt-20 p-8 md:p-12 rounded-refined bg-evergreen text-ivory border border-white/10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
           <div className="space-y-2 text-center md:text-left">
             <h3 className="font-heading font-bold text-2xl text-white">
-              Love What You See? Let's Style Your Products.
+              Want This Quality For Your Catalog?
             </h3>
             <p className="text-sm text-ivory/70 max-w-xl">
-              Submit your phone photos and project vision. We'll send you art-directed proof samples tailored to your brand.
+              Send us your raw smartphone snaps today. We'll formulate your custom set styling and deliver ready-to-sell studio visuals in 48 to 72 hours.
             </p>
           </div>
           <Button
@@ -175,12 +145,10 @@ export const Portfolio: React.FC = () => {
 
       </div>
 
-      {/* Lightbox / Before-After Comparison Modal */}
+      {/* Fullscreen Lightbox Modal */}
       {selectedItem && (
         <div className="fixed inset-0 z-50 bg-charcoal/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-6 lg:p-10 animate-in fade-in duration-200">
           <div className="bg-white rounded-refined max-w-4xl w-full max-h-[92vh] overflow-y-auto flex flex-col border border-evergreen/20 shadow-2xl relative">
-            
-            {/* Modal Header */}
             <div className="flex items-center justify-between p-4 sm:p-5 border-b border-evergreen/10 bg-ivory">
               <div>
                 <span className="text-[10px] uppercase font-bold tracking-widest text-copper">
@@ -195,14 +163,11 @@ export const Portfolio: React.FC = () => {
                 className="p-1.5 rounded text-charcoal/70 hover:text-black hover:bg-black/5"
                 aria-label="Close modal"
               >
-                <X className="w-5 h-5" />
+                ✕
               </button>
             </div>
 
-            {/* Modal Body */}
             <div className="p-4 sm:p-6 space-y-5">
-              
-              {/* Toggle View Options */}
               <div className="flex items-center justify-center gap-2">
                 <button
                   onClick={() => setLightboxMode('slider')}
@@ -213,7 +178,7 @@ export const Portfolio: React.FC = () => {
                   }`}
                 >
                   <Sliders className="w-3.5 h-3.5" />
-                  Interactive Before & After
+                  Interactive Comparison Slider
                 </button>
                 <button
                   onClick={() => setLightboxMode('after')}
@@ -224,17 +189,16 @@ export const Portfolio: React.FC = () => {
                   }`}
                 >
                   <Eye className="w-3.5 h-3.5" />
-                  Final Studio Visual
+                  Studio Output Only
                 </button>
               </div>
 
-              {/* View Display */}
               {lightboxMode === 'slider' ? (
                 <div>
                   <BeforeAfterSlider
                     beforeImage={selectedItem.beforeImage}
                     afterImage={selectedItem.afterImage}
-                    beforeLabel="Raw Camera Reference"
+                    beforeLabel="Raw Smartphone Shot"
                     afterLabel="Mangal Tech Studio Output"
                     aspectRatio="aspect-[16/10]"
                   />
@@ -252,9 +216,8 @@ export const Portfolio: React.FC = () => {
                 </div>
               )}
 
-              {/* Description & Specs */}
               <div className="bg-ivory/50 p-4 rounded-refined border border-evergreen/10 space-y-2">
-                <h4 className="font-heading font-semibold text-sm text-evergreen">Creative Notes & Execution:</h4>
+                <h4 className="font-heading font-semibold text-sm text-evergreen">Creative Direction Notes:</h4>
                 <p className="text-xs text-charcoal/80 leading-relaxed">
                   {selectedItem.description}
                 </p>
@@ -264,7 +227,6 @@ export const Portfolio: React.FC = () => {
               </div>
             </div>
 
-            {/* Modal Footer */}
             <div className="p-4 sm:p-5 border-t border-evergreen/10 bg-ivory flex items-center justify-between">
               <span className="text-xs text-charcoal/60 hidden sm:inline">
                 Want a similar aesthetic for your catalogue?
@@ -279,7 +241,6 @@ export const Portfolio: React.FC = () => {
                 Inquire For Your Product
               </Button>
             </div>
-
           </div>
         </div>
       )}

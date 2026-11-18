@@ -1,27 +1,23 @@
 import React from 'react';
-import { ArrowRight, CheckCircle2, ShieldAlert, Sparkles, Layers, Sliders, Check } from 'lucide-react';
+import { ArrowRight, CheckCircle2, ShieldAlert, Sparkles, Check } from 'lucide-react';
 import { SERVICES } from '@/data/services';
 import { Button } from '@/components/common/Button';
+import { PageBanner } from '@/components/common/PageBanner';
 
 export const Services: React.FC = () => {
   return (
-    <div className="py-12 md:py-20 bg-ivory min-h-screen">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Header */}
-        <div className="max-w-3xl mb-16 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-evergreen/10 text-evergreen text-xs font-semibold tracking-wide">
-            <Sparkles className="w-3.5 h-3.5 text-copper" />
-            <span>Creative Studio Capabilities</span>
-          </div>
-          <h1 className="font-heading font-extrabold text-4xl sm:text-5xl text-evergreen tracking-tight">
-            Our Photography Services
-          </h1>
-          <p className="text-charcoal/80 text-base sm:text-lg leading-relaxed">
-            Professional AI-assisted product photography engineered for growing brands. We merge state-of-the-art computational rendering with human art direction to deliver commercial-grade imagery without traditional studio complexity.
-          </p>
-        </div>
+    <div className="bg-ivory min-h-screen">
+      {/* Top Page Banner */}
+      <PageBanner
+        badge="Managed Creative Capabilities"
+        title="Our Photography"
+        highlightedTitle="Services"
+        description="Comprehensive commercial photography solutions engineered for digital brands. We merge computational scene staging with human art direction to deliver magazine-grade imagery without physical studio overhead."
+        bgImageUrl="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=2000&q=80"
+      />
 
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+        
         {/* AI Transparency & Quality Commitment Box */}
         <div className="mb-16 bg-white border border-evergreen/15 rounded-refined p-6 sm:p-8 shadow-subtle space-y-4">
           <div className="flex items-center gap-2 text-copper font-heading font-bold text-base">
@@ -154,7 +150,7 @@ export const Services: React.FC = () => {
         </div>
 
         {/* Global Capabilities Notice */}
-        <div className="mt-20 p-8 rounded-refined bg-evergreen text-ivory text-center space-y-4 border border-white/10 max-w-4xl mx-auto">
+        <div className="mt-20 p-8 rounded-refined bg-evergreen text-ivory text-center space-y-4 border border-white/10 max-w-4xl mx-auto shadow-xl">
           <h3 className="font-heading font-bold text-2xl text-white">
             Have a Complex or Multi-Product Requirement?
           </h3>
