@@ -209,8 +209,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           html: htmlBody,
         };
 
+        // Build attachments for Resend:
+        // Supports both direct file uploads and remote cloud URLs
+        const resendAttachments: any[] = [];
+
         if (fileAttachments.length > 0) {
-          resendPayload.attachments = fileAttachments;
+          resendAttachments.push(...fileAttachments);
+        } else if (imageLinks.length > 0) {
+          // Fetch remote files and attach directly to the email!
+          imageLinks.forEach((img) => {
+            resendAttachments.push({
+              path: img.url,
+              filename: img.name,
+            });
+          });
+        }
+
+        if (resendAttachments.length > 0) {
+          resendPayload.attachments = resendAttachments;
         }
 
         const resendResult = await resend.emails.send(resendPayload);
