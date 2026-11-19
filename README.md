@@ -1,4 +1,4 @@
-# Mangal Tech Studio – Premium AI-Assisted Product Photography
+# Mangala Tech Studio – Premium AI-Assisted Product Photography
 
 A modern, high-converting managed creative photography studio web application built with **React 18**, **TypeScript**, **Vite**, **Tailwind CSS**, **Framer Motion**, and **Vercel Serverless Functions**.
 
@@ -27,7 +27,7 @@ A modern, high-converting managed creative photography studio web application bu
    - Drag-and-drop & browse file uploads for up to 10 photos (up to 10MB each).
    - Real-time client-side format & size validation.
    - Individual preview cards with file names, sizes, and instant removal.
-   - Exact client-facing success state: *"Thank you for contacting Mangal Tech Studio! We've received your enquiry and will get back to you soon."*
+   - Exact client-facing success state: *"Thank you for contacting Mangala Tech Studio! We've received your enquiry and will get back to you soon."*
 6. **Secure Server-Side Web3Forms Integration (`api/contact.ts`):**
    - Access key is strictly stored server-side via `process.env.WEB3FORMS_ACCESS_KEY`.
    - Never bundled into frontend JavaScript or exposed in browser responses.

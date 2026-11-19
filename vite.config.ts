@@ -56,12 +56,12 @@ function localApiPlugin() {
               const web3FormData = new FormData();
               web3FormData.append('access_key', accessKey);
               web3FormData.append('subject', `Project Enquiry: ${brandName} - ${fullName}`);
-              web3FormData.append('from_name', 'Mangal Tech Studio');
+              web3FormData.append('from_name', 'Mangala Tech Studio');
               web3FormData.append('name', fullName);
               web3FormData.append('email', email);
 
               const formattedMessage = [
-                `New Project Intake for Mangal Tech Studio:`,
+                `New Project Intake for Mangala Tech Studio:`,
                 `-----------------------------------------`,
                 `Full Name: ${fullName}`,
                 `Brand / Business: ${brandName}`,

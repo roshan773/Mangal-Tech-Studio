@@ -16,7 +16,7 @@ export const RefundPolicy: React.FC = () => {
             Refund & Revision Policy
           </h1>
           <p className="text-xs text-charcoal/60">
-            Last Updated: November 2026 &bull; Mangal Tech Studio
+            Last Updated: November 2026 &bull; Mangala Tech Studio
           </p>
         </div>
 
@@ -26,7 +26,7 @@ export const RefundPolicy: React.FC = () => {
           <section className="space-y-3">
             <h2 className="font-heading font-bold text-lg text-evergreen">1. Creative Nature of Service</h2>
             <p>
-              Mangal Tech Studio delivers bespoke creative design, rendering, and manual retouching labor. Because substantial hours of manual artist direction and computational resources are dedicated from the moment a project commences, digital services are generally non-refundable once production work has begun.
+              Mangala Tech Studio delivers bespoke creative design, rendering, and manual retouching labor. Because substantial hours of manual artist direction and computational resources are dedicated from the moment a project commences, digital services are generally non-refundable once production work has begun.
             </p>
           </section>
 
