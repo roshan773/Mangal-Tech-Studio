@@ -27,7 +27,7 @@ export const Footer: React.FC = () => {
               </div>
               <div className="flex flex-col">
                 <span className="font-heading font-bold text-xl text-white tracking-tight">
-                  Mangal Tech <span className="text-copper">Studio</span>
+                  Mangala Tech <span className="text-copper">Studio</span>
                 </span>
                 <span className="text-[10px] uppercase tracking-widest text-ivory/60 font-medium">
                   Managed Creative Studio
@@ -156,7 +156,7 @@ export const Footer: React.FC = () => {
         {/* Bottom Legal & Copyright Bar */}
         <div className="pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-ivory/60 gap-4">
           <p>
-            &copy; {new Date().getFullYear()} Mangal Tech Studio. All rights reserved. Managed creative product photography.
+            &copy; {new Date().getFullYear()} Mangala Tech Studio. All rights reserved. Managed creative product photography.
           </p>
 
           <div className="flex items-center gap-6">

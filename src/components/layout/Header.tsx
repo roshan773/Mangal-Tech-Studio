@@ -56,7 +56,7 @@ export const Header: React.FC = () => {
             </div>
             <div className="flex flex-col">
               <span className="font-heading font-extrabold text-lg sm:text-xl text-white tracking-tight flex items-center gap-1.5">
-                Mangal Tech <span className="text-copper font-medium">Studio</span>
+                Mangala Tech <span className="text-copper font-medium">Studio</span>
               </span>
               <span className="text-[10px] uppercase tracking-widest text-ivory/60 font-semibold">
                 AI Product Photography
