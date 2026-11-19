@@ -9,7 +9,7 @@ export const About: React.FC = () => {
       {/* Top Page Banner */}
       <PageBanner
         badge="Our Studio Story & Philosophy"
-        title="About Mangal Tech"
+        title="About Mangala Tech"
         highlightedTitle="Studio"
         description="We are a modern managed creative photography studio. We empower independent brands, online artisans, and growing e-commerce businesses with magazine-grade visual storytelling without traditional commercial production fees."
         bgImageUrl="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=2000&q=80"
@@ -33,7 +33,7 @@ export const About: React.FC = () => {
               Meanwhile, generic AI image tools offer speed, but they consistently hallucinate—distorting labels, smudging typography, butchering logos, and changing container shapes.
             </p>
             <p className="font-medium text-evergreen">
-              Mangal Tech Studio was founded to solve this dilemma: combining the efficiency of AI-assisted rendering with the precision, taste, and strict quality control of human commercial art directors.
+              Mangala Tech Studio was founded to solve this dilemma: combining the efficiency of AI-assisted rendering with the precision, taste, and strict quality control of human commercial art directors.
             </p>
           </div>
 
@@ -41,7 +41,7 @@ export const About: React.FC = () => {
             <div className="relative rounded-refined overflow-hidden border border-evergreen/15 shadow-premium">
               <img
                 src="https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=1200&q=85"
-                alt="Mangal Tech Studio Creative Process"
+                alt="Mangala Tech Studio Creative Process"
                 className="w-full aspect-[4/3] object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-charcoal/80 via-transparent to-transparent" />
@@ -100,7 +100,7 @@ export const About: React.FC = () => {
               Your Creative Partner, Not Just a Software Tool
             </h2>
             <p className="text-xs sm:text-sm text-charcoal/70">
-              When you submit a project to Mangal Tech Studio, you are assigned a dedicated creative specialist who takes time to understand your brand guidelines, target audience, and marketing channels.
+              When you submit a project to Mangala Tech Studio, you are assigned a dedicated creative specialist who takes time to understand your brand guidelines, target audience, and marketing channels.
             </p>
           </div>
 

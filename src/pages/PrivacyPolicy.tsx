@@ -16,7 +16,7 @@ export const PrivacyPolicy: React.FC = () => {
             Privacy Policy
           </h1>
           <p className="text-xs text-charcoal/60">
-            Last Updated: November 2026 &bull; Mangal Tech Studio
+            Last Updated: November 2026 &bull; Mangala Tech Studio
           </p>
         </div>
 
@@ -26,7 +26,7 @@ export const PrivacyPolicy: React.FC = () => {
           <section className="space-y-3">
             <h2 className="font-heading font-bold text-lg text-evergreen">1. Introduction</h2>
             <p>
-              At Mangal Tech Studio ("we", "our", or "us"), we value and respect your privacy. This Privacy Policy outlines how we collect, handle, store, and protect your personal information and product reference materials when you interact with our website or submit an enquiry for our managed creative photography services.
+              At Mangala Tech Studio ("we", "our", or "us"), we value and respect your privacy. This Privacy Policy outlines how we collect, handle, store, and protect your personal information and product reference materials when you interact with our website or submit an enquiry for our managed creative photography services.
             </p>
           </section>
 

@@ -13,7 +13,7 @@ export const BeforeAfterSlider: React.FC<BeforeAfterSliderProps> = ({
   beforeImage,
   afterImage,
   beforeLabel = 'Original Photo (Raw Input)',
-  afterLabel = 'Mangal Tech Studio Transformation',
+  afterLabel = 'Mangala Tech Studio Transformation',
   aspectRatio = 'aspect-[4/3]',
   className = '',
 }) => {

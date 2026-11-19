@@ -199,7 +199,7 @@ export const Portfolio: React.FC = () => {
                     beforeImage={selectedItem.beforeImage}
                     afterImage={selectedItem.afterImage}
                     beforeLabel="Raw Smartphone Shot"
-                    afterLabel="Mangal Tech Studio Output"
+                    afterLabel="Mangala Tech Studio Output"
                     aspectRatio="aspect-[16/10]"
                   />
                   <p className="text-[11px] text-center text-charcoal/60 mt-2">

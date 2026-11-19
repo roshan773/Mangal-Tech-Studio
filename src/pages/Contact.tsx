@@ -214,30 +214,43 @@ export const Contact: React.FC = () => {
       if (uploadedFiles.length > 0) {
         for (let i = 0; i < uploadedFiles.length; i++) {
           const item = uploadedFiles[i];
-          setUploadProgress(`Uploading ${item.file.name} (${i + 1}/${uploadedFiles.length})...`);
+          setUploadProgress(`Uploading photo ${i + 1} of ${uploadedFiles.length}: ${item.file.name}...`);
 
-          const uploadData = new FormData();
-          uploadData.append('file', item.file, item.file.name);
+          let uploadedUrl: string | null = null;
+          for (let attempt = 1; attempt <= 2 && !uploadedUrl; attempt++) {
+            try {
+              const uploadData = new FormData();
+              uploadData.append('file', item.file, item.file.name);
 
-          try {
-            const res = await fetch('/api/upload', {
-              method: 'POST',
-              body: uploadData,
-            });
+              const res = await fetch('/api/upload', {
+                method: 'POST',
+                body: uploadData,
+              });
 
-            if (res.ok) {
-              const data = await res.json();
-              if (data?.url) {
-                directImageLinks.push({
-                  name: item.file.name,
-                  url: data.url,
-                });
+              if (res.ok) {
+                const data = await res.json();
+                if (data?.url) {
+                  uploadedUrl = data.url;
+                  directImageLinks.push({
+                    name: item.file.name,
+                    url: data.url,
+                  });
+                }
               }
+            } catch (uploadErr) {
+              console.warn(`Upload attempt ${attempt} error for file:`, item.file.name, uploadErr);
             }
-          } catch (uploadErr) {
-            console.warn('Upload error for file:', item.file.name, uploadErr);
           }
         }
+      }
+
+      if (uploadedFiles.length > 0 && directImageLinks.length === 0) {
+        setSubmitError(
+          'Could not upload reference photos. Please check your connection and try submitting again.'
+        );
+        setIsSubmitting(false);
+        setUploadProgress(null);
+        return;
       }
 
       setUploadProgress('Sending Enquiry Details...');
@@ -324,7 +337,7 @@ export const Contact: React.FC = () => {
               </h3>
             </div>
             <p className="text-sm sm:text-base text-ivory/90 leading-relaxed pl-11">
-              Thank you for contacting Mangal Tech Studio! We've received your enquiry and will get back to you soon.
+              Thank you for contacting Mangala Tech Studio! We've received your enquiry and will get back to you soon.
             </p>
             <div className="pl-11 pt-2">
               <button

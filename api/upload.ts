@@ -10,7 +10,7 @@ export const config = {
 };
 
 // Handle individual image uploads
-// Stores files and returns authentic, direct raw image file URLs (PNG, JPG, WEBP, etc.)
+// Stores files on high-speed raw image CDN storage and returns authentic, direct raw image file URLs (PNG, JPG, WEBP, etc.)
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
@@ -51,31 +51,58 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const blob = new Blob([fileBuffer], { type: mime });
 
     let directUrl: string | null = null;
+    const errors: string[] = [];
 
-    // 1. Primary: x0.at (Returns pure direct raw image file URL, 100% verified PNG/JPG)
+    // 1. Primary: uguu.se (Instant, raw binary CDN, supports all formats PNG/JPG/WEBP, works on AWS/Vercel)
     try {
-      const x0Data = new FormData();
-      x0Data.append('file', blob, filename);
+      const uguuData = new FormData();
+      uguuData.append('files[]', blob, filename);
 
-      const x0Res = await fetch('https://x0.at', {
+      const uguuRes = await fetch('https://uguu.se/upload', {
         method: 'POST',
-        body: x0Data,
-        headers: {
-          'User-Agent': 'curl/7.88.1',
-        },
+        body: uguuData,
       });
 
-      if (x0Res.ok) {
-        const text = await x0Res.text();
-        if (text && text.trim().startsWith('http')) {
-          directUrl = text.trim();
+      if (uguuRes.ok) {
+        const json = await uguuRes.json();
+        if (json?.success && json?.files?.[0]?.url) {
+          directUrl = json.files[0].url;
         }
+      } else {
+        errors.push(`uguu status: ${uguuRes.status}`);
       }
-    } catch (e) {
-      console.warn('x0.at upload error:', e);
+    } catch (e: any) {
+      errors.push('uguu error: ' + (e?.message || e));
     }
 
-    // 2. Secondary fallback: Catbox
+    // 2. Secondary: x0.at (Returns pure direct raw image file URL, 100% verified PNG/JPG)
+    if (!directUrl) {
+      try {
+        const x0Data = new FormData();
+        x0Data.append('file', blob, filename);
+
+        const x0Res = await fetch('https://x0.at', {
+          method: 'POST',
+          body: x0Data,
+          headers: {
+            'User-Agent': 'curl/7.88.1',
+          },
+        });
+
+        if (x0Res.ok) {
+          const text = await x0Res.text();
+          if (text && text.trim().startsWith('http')) {
+            directUrl = text.trim();
+          }
+        } else {
+          errors.push(`x0 status: ${x0Res.status}`);
+        }
+      } catch (e: any) {
+        errors.push('x0 error: ' + (e?.message || e));
+      }
+    }
+
+    // 3. Tertiary fallback: Catbox
     if (!directUrl) {
       try {
         const catboxData = new FormData();
@@ -95,9 +122,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           if (text && text.trim().startsWith('http')) {
             directUrl = text.trim();
           }
+        } else {
+          errors.push(`catbox status: ${catboxRes.status}`);
         }
-      } catch (e) {
-        console.warn('Catbox upload error:', e);
+      } catch (e: any) {
+        errors.push('catbox error: ' + (e?.message || e));
       }
     }
 
@@ -115,9 +144,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         name: filename,
       });
     } else {
+      console.error('All upload providers failed:', errors);
       return res.status(500).json({
         success: false,
         message: 'Could not upload image to storage.',
+        errors,
       });
     }
   } catch (err: any) {

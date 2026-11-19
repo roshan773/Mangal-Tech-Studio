@@ -118,7 +118,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const htmlBody = `
       <div style="font-family: Arial, sans-serif; max-width: 650px; margin: 0 auto; color: #252820; line-height: 1.6; border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
         <div style="background-color: #123B32; padding: 24px; color: #ffffff;">
-          <h2 style="margin: 0; color: #ffffff; font-size: 20px;">Mangal Tech Studio – New Project Intake</h2>
+          <h2 style="margin: 0; color: #ffffff; font-size: 20px;">Mangala Tech Studio – New Project Intake</h2>
           <p style="margin: 4px 0 0; color: #C47A4A; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;">AI Product Photography Enquiry</p>
         </div>
         
@@ -173,7 +173,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     `;
 
     const plainTextBody = [
-      `NEW PROJECT INTAKE - MANGAL TECH STUDIO`,
+      `NEW PROJECT INTAKE - MANGALA TECH STUDIO`,
       `-----------------------------------------`,
       `Client Name: ${fullName}`,
       `Brand Name: ${brandName}`,
@@ -201,7 +201,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const targetEmail = process.env.NOTIFICATION_EMAIL || 'pakhreroshan@gmail.com';
 
         const resendPayload: any = {
-          from: 'Mangal Tech Studio <onboarding@resend.dev>',
+          from: 'Mangala Tech Studio <onboarding@resend.dev>',
           to: targetEmail,
           replyTo: email,
           subject: emailSubject,
@@ -257,7 +257,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const targetEmail = process.env.NOTIFICATION_EMAIL || process.env.SMTP_USER;
 
         await transporter.sendMail({
-          from: `"Mangal Tech Studio" <${process.env.SMTP_USER}>`,
+          from: `"Mangala Tech Studio" <${process.env.SMTP_USER}>`,
           to: targetEmail,
           replyTo: email,
           subject: emailSubject,
@@ -274,12 +274,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     // 3. TRY WEB3FORMS (Always reliable, embeds direct image links)
     if (!deliverySucceeded) {
-      const accessKey = process.env.WEB3FORMS_ACCESS_KEY;
+      const accessKey = process.env.WEB3FORMS_ACCESS_KEY || 'eb315869-4e22-44f1-85c3-2bdb85fd1d0f';
       if (accessKey) {
         const web3FormData = new FormData();
         web3FormData.append('access_key', accessKey);
         web3FormData.append('subject', emailSubject);
-        web3FormData.append('from_name', 'Mangal Tech Studio');
+        web3FormData.append('from_name', 'Mangala Tech Studio');
         web3FormData.append('name', fullName);
         web3FormData.append('email', email);
         web3FormData.append('message', plainTextBody);

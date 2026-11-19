@@ -267,7 +267,7 @@ export const Home: React.FC = () => {
                 beforeImage={featuredBeforeAfters[activeBeforeAfterIndex].before}
                 afterImage={featuredBeforeAfters[activeBeforeAfterIndex].after}
                 beforeLabel="Original Raw Photo"
-                afterLabel="Mangal Tech Studio Output"
+                afterLabel="Mangala Tech Studio Output"
                 aspectRatio={featuredBeforeAfters[activeBeforeAfterIndex].aspectRatio}
               />
             </div>
@@ -493,7 +493,7 @@ export const Home: React.FC = () => {
           
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
             <span className="text-xs uppercase tracking-widest text-copper font-bold">
-              The Mangal Tech Studio Edge
+              The Mangala Tech Studio Edge
             </span>
             <h2 className="font-heading font-bold text-3xl sm:text-4xl text-evergreen tracking-tight">
               Why Brands Choose Our Managed Creative Service
