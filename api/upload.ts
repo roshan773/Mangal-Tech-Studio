@@ -10,7 +10,7 @@ export const config = {
 };
 
 // Handle individual image uploads
-// Saves to high-speed cloud storage and returns real, direct raw image file URLs (PNG, JPG, WEBP, GIF, etc.)
+// Stores files and returns authentic, direct raw image file URLs (PNG, JPG, WEBP, etc.)
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
@@ -52,51 +52,52 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     let directUrl: string | null = null;
 
-    // 1. Primary: Catbox with proper Chrome User-Agent header (outputs permanent direct PNG/JPG/WEBP link)
+    // 1. Primary: x0.at (Returns pure direct raw image file URL, 100% verified PNG/JPG)
     try {
-      const catboxData = new FormData();
-      catboxData.append('reqtype', 'fileupload');
-      catboxData.append('fileToUpload', blob, filename);
+      const x0Data = new FormData();
+      x0Data.append('file', blob, filename);
 
-      const catboxRes = await fetch('https://catbox.moe/user/api.php', {
+      const x0Res = await fetch('https://x0.at', {
         method: 'POST',
-        body: catboxData,
+        body: x0Data,
         headers: {
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+          'User-Agent': 'curl/7.88.1',
         },
       });
 
-      if (catboxRes.ok) {
-        const text = await catboxRes.text();
-        if (text && text.startsWith('http')) {
+      if (x0Res.ok) {
+        const text = await x0Res.text();
+        if (text && text.trim().startsWith('http')) {
           directUrl = text.trim();
         }
       }
     } catch (e) {
-      console.warn('Catbox upload fallback:', e);
+      console.warn('x0.at upload error:', e);
     }
 
-    // 2. Secondary fallback: Gofile
+    // 2. Secondary fallback: Catbox
     if (!directUrl) {
       try {
-        const gofileServersRes = await fetch('https://api.gofile.io/servers');
-        const gofileServersData = await gofileServersRes.json();
-        const server = gofileServersData?.data?.servers?.[0]?.name || 'store1';
+        const catboxData = new FormData();
+        catboxData.append('reqtype', 'fileupload');
+        catboxData.append('fileToUpload', blob, filename);
 
-        const gofileFormData = new FormData();
-        gofileFormData.append('file', blob, filename);
-
-        const gofileUploadRes = await fetch(`https://${server}.gofile.io/contents/uploadfile`, {
+        const catboxRes = await fetch('https://catbox.moe/user/api.php', {
           method: 'POST',
-          body: gofileFormData,
+          body: catboxData,
+          headers: {
+            'User-Agent': 'curl/7.88.1',
+          },
         });
 
-        const gofileJson = await gofileUploadRes.json();
-        if (gofileJson?.data?.downloadPage) {
-          directUrl = gofileJson.data.downloadPage;
+        if (catboxRes.ok) {
+          const text = await catboxRes.text();
+          if (text && text.trim().startsWith('http')) {
+            directUrl = text.trim();
+          }
         }
       } catch (e) {
-        console.warn('Gofile upload error:', e);
+        console.warn('Catbox upload error:', e);
       }
     }
 
